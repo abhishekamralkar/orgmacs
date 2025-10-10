@@ -1,3 +1,4 @@
+
 #+STARTUP: overview
 #+TITLE: orgmacs
 #+CREATOR: abhishek anand amralkar
@@ -215,7 +216,7 @@ Using ef Emacs theme
     (use-package ef-themes
       :ensure t
       :config
-      (load-theme 'ef-maris-dark :no-confirm))
+      (load-theme 'ef-dream :no-confirm))
 #+end_src
 
 Using FIRACODE Nerd fonts
@@ -224,8 +225,8 @@ Using FIRACODE Nerd fonts
 (use-package emacs
   :init
   (set-face-attribute 'default nil 
-    :font "FiraCode Nerd Font" 
-    :height 120))
+    :font "Inconsolata Nerd Font Mono Medium" 
+    :height 180))
 #+end_src
 
 Ligatures
