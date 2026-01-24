@@ -1,0 +1,51 @@
+#+TITLE: Org-Mode Configuration
+#+PROPERTY: header-args:emacs-lisp :tangle org-mode-config.el :mkdirp yes
+#+STARTUP: overview
+
+* Header
+#+begin_src emacs-lisp
+;;; org-mode-config.el --- Org-mode enhancements -*- lexical-binding: t -*-
+;;; Commentary:
+;; Org-mode bullets, settings, and visual improvements
+;;; Code:
+#+end_src
+
+* Org Bullets
+
+#+begin_src emacs-lisp
+(use-package org-bullets
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+#+end_src
+
+* Org Settings
+
+#+begin_src emacs-lisp
+(setq org-ellipsis " ")
+(setq org-src-fontify-natively t)
+(setq org-src-tab-acts-natively t)
+(setq org-confirm-babel-evaluate nil)
+(setq org-export-with-smart-quotes t)
+(setq org-src-window-setup 'current-window)
+#+end_src
+
+* Org Hooks
+
+** Indent Mode
+#+begin_src emacs-lisp
+(add-hook 'org-mode-hook 'org-indent-mode)
+#+end_src
+
+** Visual Line Mode
+#+begin_src emacs-lisp
+(add-hook 'org-mode-hook
+          (lambda ()
+            (visual-line-mode 1)))
+#+end_src
+
+* Footer
+#+begin_src emacs-lisp
+(provide 'org-mode-config)
+;;; org-mode-config.el ends here
+#+end_src
