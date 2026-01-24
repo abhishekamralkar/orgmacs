@@ -23,43 +23,23 @@ A modular, org-based Emacs configuration that's easy to maintain and customize.
 
 ## 🚀 Installation
 
-### Option 1: Fresh Install
+### Quick Setup
+
+Run the setup script to generate all `.el` files from `.org` files:
 
 ```bash
-# Backup existing config
-mv ~/.emacs.d ~/.emacs.d.backup
+./setup.sh
+```
 
-# Create directory structure
-mkdir -p ~/.emacs.d/config
+This will:
+1. Tangle all `.org` files to generate corresponding `.el` files
+2. Create the necessary directory structure
+3. Initialize your Emacs configuration
 
-# Copy all .org files to their locations
-# init.org goes to ~/.emacs.d/
-# All config/*.org files go to ~/.emacs.d/config/
+Then start Emacs:
 
-# Start Emacs - it will tangle all files automatically
+```bash
 emacs
-```
-
-### Option 2: Manual Tangling
-
-```bash
-# After copying .org files, open Emacs and run:
-M-x org-babel-tangle-file RET ~/.emacs.d/init.org
-M-x org-babel-tangle-file RET ~/.emacs.d/config/core.org
-# ... repeat for each config file
-```
-
-### Option 3: Batch Tangle (Script)
-
-Create a tangle script `tangle-all.sh`:
-
-```bash
-#!/bin/bash
-emacs --batch \
-  --eval "(require 'org)" \
-  --eval "(org-babel-tangle-file \"~/.emacs.d/init.org\")" \
-  --eval "(mapc (lambda (f) (org-babel-tangle-file f)) 
-           (directory-files \"~/.emacs.d/config\" t \"\\.org$\"))"
 ```
 
 ## 📝 Usage
