@@ -1,3 +1,8 @@
+#+title: Emacs Package Management
+#+author: Abhishek Amralkar
+#+property: header-args:emacs-lisp :tangle yes :results silent
+#+startup: overview
+
 * Package Management
 
 This section configures Emacs’ built-in package system and defines the package archives used to install and manage extensions. It bootstraps use-package, which provides a consistent and declarative way to install, configure, and organize packages. Enabling org-tempo restores Org structure templates, improving the authoring experience in Org-mode–based configurations.
