@@ -1,0 +1,101 @@
+#+TITLE: Editing Configuration
+#+PROPERTY: header-args:emacs-lisp :tangle editing-config.el :mkdirp yes
+#+STARTUP: overview
+
+* Header
+#+begin_src emacs-lisp
+;;; editing-config.el --- Editing tools and completion -*- lexical-binding: t -*-
+;;; Commentary:
+;; Company, Helm, Yasnippet, and editing utilities
+;;; Code:
+#+end_src
+
+* Parentheses
+
+** Show Parens
+#+begin_src emacs-lisp
+(show-paren-mode 1)
+#+end_src
+
+** Rainbow Delimiters
+#+begin_src emacs-lisp
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+#+end_src
+
+* Electric Pair Mode
+
+#+begin_src emacs-lisp
+(use-package electric
+  :config
+  (electric-pair-mode 1))
+#+end_src
+
+* Snippets
+
+#+begin_src emacs-lisp
+(use-package yasnippet
+  :config
+  (use-package yasnippet-snippets)
+  (yas-reload-all)
+  :hook (prog-mode . yas-minor-mode))
+#+end_src
+
+* Completion
+
+** Company Mode
+#+begin_src emacs-lisp
+(use-package company
+  :hook (after-init . global-company-mode)
+  :config
+  (setq company-idle-delay 0.2
+        company-minimum-prefix-length 1
+        company-show-numbers t
+        company-tooltip-align-annotations t
+        company-tooltip-flip-when-above t))
+#+end_src
+
+* Helm
+
+#+begin_src emacs-lisp
+(use-package helm
+  :bind (("C-x C-f" . helm-find-files)
+         ("C-x C-b" . helm-buffers-list)
+         ("M-x" . helm-M-x))
+  :config
+  (defun orgmacs/helm-hide-minibuffer ()
+    (when (with-helm-buffer helm-echo-input-in-header-line)
+      (let ((ov (make-overlay (point-min) (point-max) nil nil t)))
+        (overlay-put ov 'window (selected-window))
+        (overlay-put ov 'face
+                     (let ((bg-color (face-background 'default nil)))
+                       `(:background ,bg-color :foreground ,bg-color)))
+        (setq-local cursor-type nil))))
+  
+  (add-hook 'helm-minibuffer-set-up-hook 'orgmacs/helm-hide-minibuffer)
+  
+  (setq helm-autoresize-max-height 0
+        helm-autoresize-min-height 40
+        helm-M-x-fuzzy-match t
+        helm-buffers-fuzzy-matching t
+        helm-recentf-fuzzy-match t
+        helm-semantic-fuzzy-match t
+        helm-imenu-fuzzy-match t
+        helm-split-window-in-side-p nil
+        helm-move-to-line-cycle-in-source nil
+        helm-ff-search-library-in-sexp t
+        helm-scroll-amount 8 
+        helm-echo-input-in-header-line t)
+  
+  (helm-mode 1)
+  (helm-autoresize-mode 1)
+  
+  (define-key helm-find-files-map (kbd "C-b") 'helm-find-files-up-one-level)
+  (define-key helm-find-files-map (kbd "C-f") 'helm-execute-persistent-action))
+#+end_src
+
+* Footer
+#+begin_src emacs-lisp
+(provide 'editing-config)
+;;; editing-config.el ends here
+#+end_src

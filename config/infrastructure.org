@@ -1,0 +1,67 @@
+#+TITLE: Infrastructure Configuration
+#+PROPERTY: header-args:emacs-lisp :tangle infrastructure-config.el :mkdirp yes
+#+STARTUP: overview
+
+* Header
+#+begin_src emacs-lisp
+;;; infrastructure-config.el --- DevOps and infrastructure tools -*- lexical-binding: t -*-
+;;; Commentary:
+;; JSON, YAML, Docker, Kubernetes, and Terraform support
+;;; Code:
+#+end_src
+
+* Data Formats
+
+** JSON
+#+begin_src emacs-lisp
+(use-package json-mode
+  :config
+  (customize-set-variable 'json-mode-hook
+                          (lambda ()
+                            (setq tab-width 2))))
+#+end_src
+
+** YAML
+#+begin_src emacs-lisp
+(use-package yaml-mode)
+#+end_src
+
+* Docker
+
+** Docker Interface
+#+begin_src emacs-lisp
+(use-package docker
+  :bind (("C-c d c" . docker-containers)
+         ("C-c d i" . docker-images)))
+#+end_src
+
+** Dockerfile Mode
+#+begin_src emacs-lisp
+(use-package dockerfile-mode)
+#+end_src
+
+* Kubernetes
+
+** Kubernetes Interface
+#+begin_src emacs-lisp
+(use-package kubernetes
+  :commands (kubernetes-overview))
+#+end_src
+
+** K8s Mode
+#+begin_src emacs-lisp
+(use-package k8s-mode
+  :hook (k8s-mode . yas-minor-mode))
+#+end_src
+
+* Terraform
+
+#+begin_src emacs-lisp
+(use-package terraform-mode)
+#+end_src
+
+* Footer
+#+begin_src emacs-lisp
+(provide 'infrastructure-config)
+;;; infrastructure-config.el ends here
+#+end_src

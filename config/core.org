@@ -1,0 +1,174 @@
+#+TITLE: Core Configuration
+#+PROPERTY: header-args:emacs-lisp :tangle core-config.el :mkdirp yes
+#+STARTUP: overview
+
+* Header
+#+begin_src emacs-lisp
+;;; core-config.el --- Core Emacs configuration -*- lexical-binding: t -*-
+;;; Commentary:
+;; Package manager, basic settings, and performance
+;;; Code:
+#+end_src
+
+* Package Manager
+
+** Package Archives
+#+begin_src emacs-lisp
+(require 'package)
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                         ("org"   . "https://orgmode.org/elpa/")
+                         ("elpa"  . "https://elpa.gnu.org/packages/")))
+
+(package-initialize)
+(unless package-archive-contents 
+  (package-refresh-contents))
+#+end_src
+
+** Use-Package
+#+begin_src emacs-lisp
+;; Install use-package if not present
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+
+(require 'use-package)
+(setq use-package-always-ensure t)
+#+end_src
+
+** Org-Tempo
+#+begin_src emacs-lisp
+(require 'org-tempo)
+#+end_src
+
+** Auto Package Update
+#+begin_src emacs-lisp
+(use-package auto-package-update
+  :custom
+  (auto-package-update-interval 7)
+  (auto-package-update-prompt-before-update t)
+  (auto-package-update-hide-results t)
+  :config
+  (auto-package-update-maybe)
+  (auto-package-update-at-time "09:00"))
+#+end_src
+
+* Performance
+
+** GCMH (Garbage Collector Magic Hack)
+#+begin_src emacs-lisp
+(use-package gcmh
+  :demand
+  :config
+  (gcmh-mode 1))
+#+end_src
+
+* Basic Settings
+
+** Screen Settings
+#+begin_src emacs-lisp
+(setq inhibit-startup-message t)
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
+(setq ring-bell-function 'ignore)
+(defalias 'yes-or-no-p 'y-or-n-p)
+(setq line-number-mode t)
+(setq column-number-mode t)
+#+end_src
+
+** UTF-8 Encoding
+#+begin_src emacs-lisp
+(set-charset-priority 'unicode)
+(setq locale-coding-system 'utf-8
+      coding-system-for-read 'utf-8
+      coding-system-for-write 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+(setq default-process-coding-system '(utf-8-unix . utf-8-unix))
+#+end_src
+
+** Which-Key
+#+begin_src emacs-lisp
+(use-package which-key
+  :config
+  (which-key-mode))
+#+end_src
+
+** Backup Settings
+#+begin_src emacs-lisp
+(setq make-backup-files nil)
+#+end_src
+
+** Auto-Save Settings
+#+begin_src emacs-lisp
+(setq auto-save-default t)
+(setq auto-save-timeout 10)
+#+end_src
+
+** Auto-Revert
+#+begin_src emacs-lisp
+(global-auto-revert-mode 1)
+(setq global-auto-revert-non-file-buffers t)
+(setq auto-revert-verbose nil)
+#+end_src
+
+** Warnings
+#+begin_src emacs-lisp
+(setq warning-minimum-level :emergency)
+#+end_src
+
+** macOS Settings
+#+begin_src emacs-lisp
+(when (eq system-type 'darwin)
+  (setq mac-command-modifier 'super)
+  (setq mac-option-modifier nil)
+  (setq mac-control-modifier nil)
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+  (add-to-list 'default-frame-alist '(ns-appearance . light))
+  (setq ns-use-proxy-icon nil)
+  (setq frame-title-format nil))
+#+end_src
+
+** Fill Column
+#+begin_src emacs-lisp
+(setq-default fill-column 80)
+(set-face-attribute 'fill-column-indicator nil
+                    :foreground "#717C7C"
+                    :background "transparent")
+(global-display-fill-column-indicator-mode 1)
+#+end_src
+
+* Custom Functions
+
+** Config Reload
+#+begin_src emacs-lisp
+(defun config-reload ()
+  "Reload the main init.el file."
+  (interactive)
+  (load-file (expand-file-name "init.el" user-emacs-directory)))
+#+end_src
+
+** Config Edit
+#+begin_src emacs-lisp
+(defun config-edit ()
+  "Open the main configuration org file."
+  (interactive)
+  (find-file (expand-file-name "init.org" user-emacs-directory)))
+#+end_src
+
+* Keybindings
+
+#+begin_src emacs-lisp
+(global-set-key (kbd "M-<up>") 'beginning-of-buffer)
+(global-set-key (kbd "M-<down>") 'end-of-buffer)
+(global-set-key (kbd "C-c c") 'org-capture)
+(global-set-key (kbd "C-c r") 'config-reload)
+(global-set-key (kbd "C-c e") 'config-edit)
+#+end_src
+
+* Footer
+#+begin_src emacs-lisp
+(provide 'core-config)
+;;; core-config.el ends here
+#+end_src

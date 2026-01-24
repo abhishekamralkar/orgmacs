@@ -17,4 +17,5 @@ tramp
 tree-sitter/
 straight
 .cache
-init.el
+*.el
+config/*.el

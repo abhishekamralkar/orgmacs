@@ -1,108 +1,237 @@
-# OrgEmacs Configuration
+# OrgMacs - Modular Emacs Configuration
 
-This repository contains my personal Emacs configuration, named **OrgEmacs**, written in Org Mode and designed to enhance productivity, streamline workflows, and provide a personalized editing experience. The configuration is modular, easy to maintain, and uses `straight.el` for package management.
+A modular, org-based Emacs configuration that's easy to maintain and customize.
 
-## Features
-
-- **Custom Keybindings**: Includes custom keybindings for faster navigation and editing.
-- **Programming Support**: Syntax highlighting, linting, autocompletion, and language server integration for multiple programming languages.
-- **Org Mode Enhancements**: Improved support for `org-mode` with custom templates, bullets, and settings.
-- **Modern UI**: Features a clean and modern UI with `doom-modeline`, `dashboard`, and custom themes.
-- **Performance Optimizations**: Includes `gcmh` for optimized garbage collection and other tweaks for a smoother experience.
-
-## Supported Languages
-
-OrgEmacs provides configurations for the following programming languages:
-
-- **Python**: Integrated with `lsp-pyright`, `blacken`, and `pyvenv` for virtual environments and formatting.
-- **Golang**: Configured with `go-mode` and `gopls` for Go development.
-- **Rust**: Includes `rust-mode` and `cargo` for Rust development.
-- **Clojure**: Configured with `clojure-mode`, `cider`, and `clj-refactor`.
-- **Bash**: Enhanced with `company-shell` and `flycheck` for shell scripting.
-- **Emacs Lisp**: Includes `slime` and `slime-company` for Lisp development.
-- **JSON**: Configured with `json-mode` for editing JSON files.
-- **YAML**: Adds support for YAML files with `yaml-mode`.
-- **Docker**: Provides tools for managing Docker containers and images.
-- **Kubernetes**: Configured with `kubernetes` and `k8s-mode` for Kubernetes resources.
-- **Terraform**: Adds support for editing Terraform configuration files.
-
-## Directory Structure
+## 📁 Directory Structure
 
 ```
-.emacs.d/
-├── init.el               # Main configuration file (generated from emacs.org)
-├── emacs.org             # Org file containing the configuration
-├── .github/              # GitHub workflows and wiki files
-└── README.md             # Documentation for the configuration
+~/.emacs.d/
+├── init.el                    # Main entry (auto-generated)
+├── early-init.el              # Early init (auto-generated)
+├── init.org                   # Main orchestrator
+├── config/
+│   ├── core.org              # Core settings & package manager
+│   ├── ui.org                # UI, theme, modeline, dashboard
+│   ├── editing.org           # Editing tools & completion
+│   ├── programming.org       # Programming tools (LSP, Git, etc.)
+│   ├── languages.org         # Language-specific configs
+│   ├── infrastructure.org    # DevOps tools
+│   ├── org-mode.org          # Org-mode configuration
+│   └── files.org             # File management (Dired)
+└── custom.el                 # Auto-generated custom settings
 ```
 
-## Installation
+## 🚀 Installation
 
-To set up this Emacs configuration, follow these steps:
+### Option 1: Fresh Install
 
-1. **Install Emacs**  
-   Ensure you have Emacs installed on your system. You can download it from [GNU Emacs](https://www.gnu.org/software/emacs/) or use your system's package manager.
+```bash
+# Backup existing config
+mv ~/.emacs.d ~/.emacs.d.backup
 
-2. **Install Git**  
-   Ensure `git` is installed on your system. Use your system's package manager to install it if necessary.
+# Create directory structure
+mkdir -p ~/.emacs.d/config
 
-3. **Clone the Repository**  
-   Clone this repository into your `.emacs.d` directory:
+# Copy all .org files to their locations
+# init.org goes to ~/.emacs.d/
+# All config/*.org files go to ~/.emacs.d/config/
 
-   ```sh
-   git clone git@github.com:abhishekamralkar/myemacs.git ~/.emacs.d
-   ```
+# Start Emacs - it will tangle all files automatically
+emacs
+```
 
-4. **Run the Installation Script**  
-   Navigate to the cloned directory and execute the `install.sh` script to automate the setup process:
+### Option 2: Manual Tangling
 
-   ```sh
-   cd ~/.emacs.d
-   chmod +x install.sh
-   ./install.sh
-   ```
+```bash
+# After copying .org files, open Emacs and run:
+M-x org-babel-tangle-file RET ~/.emacs.d/init.org
+M-x org-babel-tangle-file RET ~/.emacs.d/config/core.org
+# ... repeat for each config file
+```
 
-5. **Start Emacs**  
-   Open Emacs, and it will automatically install the required packages using `straight.el`.
+### Option 3: Batch Tangle (Script)
 
-6. **Verify Configuration**  
-   Check if all packages are installed and working correctly. Use `M-x config-edit` to edit the configuration if needed.
+Create a tangle script `tangle-all.sh`:
 
-## Key Features
+```bash
+#!/bin/bash
+emacs --batch \
+  --eval "(require 'org)" \
+  --eval "(org-babel-tangle-file \"~/.emacs.d/init.org\")" \
+  --eval "(mapc (lambda (f) (org-babel-tangle-file f)) 
+           (directory-files \"~/.emacs.d/config\" t \"\\.org$\"))"
+```
 
-### Programming Support
+## 📝 Usage
 
-- **Python**: Integrated with `lsp-pyright`, `blacken`, and `pyvenv` for a seamless Python development experience.
-- **Golang**: Configured with `go-mode` and `gopls` for Go development.
-- **Rust**: Includes `rust-mode` and `cargo` for Rust development.
-- **Clojure**: Configured with `clojure-mode`, `cider`, and `clj-refactor`.
+### Editing Configuration
 
-### Org Mode Enhancements
+1. Open any `.org` file in the config
+2. Make your changes
+3. Save (auto-tangle will generate `.el` files)
+4. Reload Emacs or run `M-x config-reload`
 
-- Custom bullets with `org-bullets`.
-- Improved visual appearance and usability with settings for ellipsis, fontification, and indentation.
+### Quick Access
 
-### Modern UI
+- `C-c e` - Edit main configuration (opens init.org)
+- `C-c r` - Reload configuration
 
-- **Modeline**: Uses `doom-modeline` for a clean and informative modeline.
-- **Dashboard**: Displays a customizable startup dashboard with recent files, bookmarks, and projects.
-- **Themes**: Includes `ef-themes` for a modern look and feel.
+### Enabling/Disabling Modules
 
-### Performance Optimizations
+In `init.el` (tangled from `init.org`), comment out modules you don't want:
 
-- **Garbage Collection**: Uses `gcmh` to minimize GC interference during user activity.
-- **Auto-Save**: Configured for frequent auto-saving to prevent data loss.
+```emacs-lisp
+;; (require 'infrastructure-config)  ; Disable DevOps tools
+```
 
-## Customization
+## 🔧 Customization
 
-- **Themes**: Place your custom themes in the `themes/` directory and load them in `emacs.org`.
-- **Keybindings**: Modify keybindings in the `Custom` section of `emacs.org`.
-- **Languages**: Add or update language-specific configurations in the `Languages` section of `emacs.org`.
+### Adding a New Module
 
-## Contributing
+1. Create `config/my-module.org`
+2. Add header with tangle target:
 
-Feel free to fork this repository and submit pull requests with improvements or bug fixes. Contributions are always welcome!
+```org
+#+TITLE: My Module
+#+PROPERTY: header-args:emacs-lisp :tangle ./config/my-module-config.el :mkdirp yes
 
-## License
+* Header
+#+begin_src emacs-lisp
+;;; my-module-config.el --- Description -*- lexical-binding: t -*-
+;;; Code:
+#+end_src
 
-This configuration is licensed under the [GPLv3 License](https://www.gnu.org/licenses/gpl-3.0).
+* Your Configuration
+#+begin_src emacs-lisp
+;; Your code here
+#+end_src
+
+* Footer
+#+begin_src emacs-lisp
+(provide 'my-module-config)
+;;; my-module-config.el ends here
+#+end_src
+```
+
+3. Add to `init.org`:
+```emacs-lisp
+(require 'my-module-config)
+```
+
+### Modifying Existing Config
+
+Just edit the relevant `.org` file and save. The `.el` files will be regenerated automatically.
+
+## 📦 Package Management
+
+All packages use `use-package` with `:ensure t` by default (set in `core.org`).
+
+### Installing New Packages
+
+Add to appropriate module:
+
+```org
+#+begin_src emacs-lisp
+(use-package package-name
+  :config
+  ;; your config
+  )
+#+end_src
+```
+
+## 🎯 Features
+
+- **Modular**: Each concern in its own file
+- **Documented**: Org-mode makes configuration self-documenting
+- **Maintainable**: Easy to enable/disable features
+- **Portable**: Share specific modules with others
+- **Literate**: Mix documentation with code
+
+## 📚 Module Overview
+
+| Module | Purpose |
+|--------|---------|
+| `core.org` | Package manager, basic settings, performance |
+| `ui.org` | Theme, modeline, dashboard, fonts |
+| `editing.org` | Company, Helm, snippets, editing tools |
+| `programming.org` | LSP, Magit, Projectile, syntax checking |
+| `languages.org` | Python, Go, Rust, Clojure, etc. |
+| `infrastructure.org` | Docker, K8s, Terraform, JSON/YAML |
+| `org-mode.org` | Org-mode enhancements |
+| `files.org` | Dired and file management |
+
+## 🛠️ Prerequisites
+
+### Required
+
+- Emacs 27.1 or higher
+- Git
+
+### Optional Tools
+
+#### Python Development
+```bash
+pip3 install pyright black
+```
+
+#### Go Development
+```bash
+go install golang.org/x/tools/gopls@latest
+go install golang.org/x/tools/cmd/goimports@latest
+```
+
+#### Rust Development
+```bash
+rustup component add rust-analyzer
+```
+
+#### General Tools
+```bash
+# macOS
+brew install ripgrep fzf
+
+# Ubuntu/Debian
+apt install ripgrep fzf
+
+# Arch
+pacman -S ripgrep fzf
+```
+
+## 🔍 Troubleshooting
+
+### Packages not installing
+
+```emacs-lisp
+M-x package-refresh-contents
+M-x package-install-selected-packages
+```
+
+### Tangling not working
+
+Ensure org file has:
+```org
+#+PROPERTY: header-args:emacs-lisp :tangle ./path/to/file.el :mkdirp yes
+```
+
+### Module not loading
+
+Check that:
+1. `.el` file was generated in correct location
+2. Module is required in `init.el`
+3. No syntax errors in org file
+
+## 📄 License
+
+GPL v3 - Same as GNU Emacs
+
+## 🤝 Contributing
+
+Feel free to:
+- Fork and customize
+- Share your modules
+- Report issues
+- Suggest improvements
+
+---
+
+**Happy Hacking! 🎉**

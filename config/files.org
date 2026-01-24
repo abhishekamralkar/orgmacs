@@ -1,0 +1,56 @@
+#+TITLE: File Management Configuration
+#+PROPERTY: header-args:emacs-lisp :tangle files-config.el :mkdirp yes
+#+STARTUP: overview
+
+* Header
+#+begin_src emacs-lisp
+;;; files-config.el --- File management with Dired -*- lexical-binding: t -*-
+;;; Commentary:
+;; Enhanced Dired configuration and file browsing
+;;; Code:
+#+end_src
+
+* Dired
+
+** Base Configuration
+#+begin_src emacs-lisp
+(use-package dired
+  :ensure nil
+  :commands (dired dired-jump)
+  :bind (("C-x C-j" . dired-jump))
+  :custom
+  (dired-listing-switches "-agho --group-directories-first"))
+#+end_src
+
+** Dired Single
+#+begin_src emacs-lisp
+(use-package dired-single
+  :commands (dired dired-jump))
+#+end_src
+
+** Dired Icons
+#+begin_src emacs-lisp
+(use-package all-the-icons-dired
+  :hook (dired-mode . all-the-icons-dired-mode))
+#+end_src
+
+** Dired Open
+#+begin_src emacs-lisp
+(use-package dired-open
+  :commands (dired dired-jump)
+  :config
+  (setq dired-open-extensions '(("png" . "feh")
+                                ("mkv" . "mpv"))))
+#+end_src
+
+** Hide Dotfiles
+#+begin_src emacs-lisp
+(use-package dired-hide-dotfiles
+  :hook (dired-mode . dired-hide-dotfiles-mode))
+#+end_src
+
+* Footer
+#+begin_src emacs-lisp
+(provide 'files-config)
+;;; files-config.el ends here
+#+end_src
