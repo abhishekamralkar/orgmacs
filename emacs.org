@@ -226,7 +226,7 @@ Using FIRACODE Nerd fonts
   :init
   (set-face-attribute 'default nil 
     :font "Inconsolata Nerd Font Mono Medium" 
-    :height 180))
+    :height 140))
 #+end_src
 
 Ligatures
