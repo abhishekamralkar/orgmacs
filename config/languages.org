@@ -10,15 +10,22 @@
 ;;; Code:
 #+end_src
 
-* Python
-
-** LSP Pyright
+* Company (Global Setup)
+;; Configure company globally here so all language modes inherit it cleanly.
 #+begin_src emacs-lisp
-(use-package lsp-pyright
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-pyright)
-                         (lsp-deferred))))
+(use-package company
+  :ensure t
+  :demand t
+  :init
+  (setq company-idle-delay 0.2
+        company-minimum-prefix-length 1
+        company-show-quick-access t
+        company-tooltip-align-annotations t)
+  :config
+  (global-company-mode 1))
 #+end_src
+
+* Python
 
 ** Pyvenv
 #+begin_src emacs-lisp
@@ -28,7 +35,7 @@
   :config
   (setq pyvenv-post-activate-hooks
         (list (lambda ()
-                (setq python-shell-interpreter 
+                (setq python-shell-interpreter
                       (concat pyvenv-virtual-env "bin/python")))))
   (setq pyvenv-post-deactivate-hooks
         (list (lambda ()
@@ -44,13 +51,19 @@
 #+end_src
 
 ** Python Mode
+;; Uses Eglot (configured in programming-config.el) for LSP.
+;; company-capf is the bridge between Eglot completions and company-mode.
 #+begin_src emacs-lisp
 (use-package python-mode
   :hook ((python-mode . pyvenv-mode)
          (python-mode . flycheck-mode)
-         (python-mode . company-mode)
          (python-mode . blacken-mode)
-         (python-mode . yas-minor-mode))
+         (python-mode . yas-minor-mode)
+         (python-mode . (lambda ()
+                          ;; Eglot exposes completions via capf; make sure
+                          ;; company picks that up and nothing else clobbers it.
+                          (setq-local company-backends '(company-capf))
+                          (company-mode 1))))
   :custom
   (python-shell-interpreter "python3"))
 #+end_src
@@ -65,9 +78,14 @@
 ** Go Settings
 #+begin_src emacs-lisp
 (with-eval-after-load 'go-mode
-  (setq exec-path (append exec-path '("/usr/local/go/bin/go")))
+  ;; FIX: exec-path takes directories, not full binary paths.
+  (setq exec-path (append exec-path '("/usr/local/go/bin")))
   (setq gofmt-command "goimports")
-  (add-hook 'before-save-hook 'gofmt-before-save))
+  (add-hook 'before-save-hook 'gofmt-before-save)
+  (add-hook 'go-mode-hook
+            (lambda ()
+              (setq-local company-backends '(company-capf))
+              (company-mode 1))))
 #+end_src
 
 * Rust
@@ -75,7 +93,10 @@
 ** Rust Mode
 #+begin_src emacs-lisp
 (use-package rust-mode
-  :hook (rust-mode . eglot-ensure)
+  :hook ((rust-mode . eglot-ensure)
+         (rust-mode . (lambda ()
+                        (setq-local company-backends '(company-capf))
+                        (company-mode 1))))
   :config
   (setq rust-format-on-save t))
 #+end_src
@@ -96,7 +117,8 @@
 
 ** Cider
 #+begin_src emacs-lisp
-(use-package cider)
+(use-package cider
+  :hook (cider-repl-mode . company-mode))
 #+end_src
 
 ** Clj-Refactor
@@ -105,7 +127,8 @@
   :config
   (add-hook 'clojure-mode-hook
             (lambda ()
-              (clj-refactor-mode 1)))
+              (clj-refactor-mode 1)
+              (company-mode 1)))
   (cljr-add-keybindings-with-prefix "C-c C-m")
   (setq cljr-warn-on-eval nil))
 #+end_src
@@ -117,16 +140,16 @@
 (use-package company-shell
   :config
   (defun shell-mode-company-init ()
-    (setq-local company-backends 
+    (setq-local company-backends
                 '((company-shell
                    company-shell-env
                    company-etags
-                   company-dabbrev-code))))
-  
+                   company-dabbrev-code)))
+    (company-mode 1))
+
   (add-hook 'shell-mode-hook 'shell-mode-company-init)
   (add-hook 'shell-mode-hook 'yas-minor-mode)
-  (add-hook 'shell-mode-hook 'flycheck-mode)
-  (add-hook 'shell-mode-hook 'company-mode))
+  (add-hook 'shell-mode-hook 'flycheck-mode))
 #+end_src
 
 * Emacs Lisp

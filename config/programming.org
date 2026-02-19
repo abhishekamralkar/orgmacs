@@ -89,6 +89,27 @@
   :after tree-sitter)
 #+end_src
 
+* Go / Company
+
+#+begin_src emacs-lisp
+(use-package company
+  :ensure t
+  :defer t
+  :init
+  ;; general company settings
+  (setq company-idle-delay 0.2
+        company-minimum-prefix-length 1)
+  :config
+  ;; Prefer LSP/EGLOT completion (capf) in Go buffers
+  (add-hook 'go-mode-hook
+            (lambda ()
+              (company-mode 1)
+              (setq-local company-backends '(company-capf))
+              ;; If `corfu' is enabled globally, disable it in go-mode to avoid UI conflicts
+              (when (fboundp 'corfu-mode)
+                (corfu-mode -1)))))
+#+end_src
+
 * Environment
 
 #+begin_src emacs-lisp
@@ -96,6 +117,21 @@
   :config
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
+#+end_src
+
+#+begin_src emacs-lisp
+;; Ensure Go bins are in Emacs `exec-path` (user and system locations)
+(let ((gobin (expand-file-name "~/go/bin"))
+      (sysgobin "/usr/local/go/bin"))
+  (dolist (dir (list gobin sysgobin))
+    (when (and (file-directory-p dir)
+               (not (member dir exec-path)))
+      (add-to-list 'exec-path dir)
+      (setenv "PATH" (concat dir ":" (getenv "PATH"))))))
+
+;; Prefer `gopls` for Go via Eglot if available.
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs '(go-mode . ("gopls"))))
 #+end_src
 
 * Footer
