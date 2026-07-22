@@ -25,11 +25,6 @@
   :bind ("C-x g" . magit))
 #+end_src
 
-** SQLite (for Forge)
-#+begin_src emacs-lisp
-(use-package sqlite3)
-#+end_src
-
 ** Forge
 #+begin_src emacs-lisp
 (use-package forge

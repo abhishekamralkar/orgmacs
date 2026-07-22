@@ -19,3 +19,4 @@ straight
 .cache
 *.el
 config/*.el
+projectile-frecency.eld
